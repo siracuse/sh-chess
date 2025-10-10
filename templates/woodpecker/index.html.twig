@@ -1,7 +1,94 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello WoodpeckerController!{% endblock %}
-
 {% block body %}
-WOODPECKER
+<h2 id="puzzleMessage">{{ puzzle.message }}</h2>
+<div id="myBoard" style="width: 400px"></div>
+<p id="gameStatus"></p>
+<p>Puzzle <span id="puzzleIndex">1</span>
+
+<script>
+let currentPuzzleId = {{ puzzle.id }};
+let currentPuzzleIndex = 4;
+
+let game = new Chess('{{ puzzle.fen }}');
+let board = Chessboard2('myBoard', { draggable: true, position: '{{ puzzle.fen }}', onDrop: onDrop });
+let solutionMoves = {{ puzzle.solution|raw }}
+// let solutionMoves = ["e5c7","a5b4","c7d8"];
+console.log(solutionMoves);
+let currentMoveIndex = 0;
+
+updateStatus();
+
+function onDrop(dropEvt) {
+    const move = game.move({ from: dropEvt.source, to: dropEvt.target, promotion: 'q' });
+    if (!move) return 'snapback';
+
+    const playedMove = dropEvt.source + dropEvt.target;
+    console.log(playedMove,'playedMove');
+    console.log(solutionMoves, 'solutionMoves');
+    if (playedMove === solutionMoves[currentMoveIndex]) {
+        
+        currentMoveIndex++;
+        board.position(game.fen());
+        updateStatus();
+
+        if (currentMoveIndex >= solutionMoves.length) {
+            console.log('au suivant');
+            onPuzzleComplete();
+            return;
+        }
+
+        if (currentMoveIndex === 1) {
+            const autoMove = solutionMoves[currentMoveIndex];
+            setTimeout(() => {
+                game.move({ from: autoMove.slice(0,2), to: autoMove.slice(2,4), promotion:'q' });
+                currentMoveIndex++;
+                board.position(game.fen());
+                updateStatus();
+            }, 400);
+        }
+    } else {
+        game.undo();
+        alert('❌ Mauvais coup ! Réessaie.');
+        return 'snapback';
+    }
+}
+
+function updateStatus() {
+    document.getElementById('gameStatus').innerText = game.turn() === 'w' ? 'Trait aux Blancs' : 'Trait aux Noirs';
+}
+
+function onPuzzleComplete() {
+    setTimeout(() => {
+        alert('✅ Puzzle terminé ! Chargement du suivant...');
+        loadNextPuzzle();
+    }, 300);
+}
+
+function loadNextPuzzle() {
+    const formData = new FormData();
+    formData.append('currentId', currentPuzzleId);
+
+    fetch('{{ path("woodpecker_next") }}', { method:'POST', body: formData })
+        .then(resp => resp.json())
+        .then(data => {
+            if(data.done){
+                alert('🎉 Tous les puzzles terminés !');
+                return;
+            }
+
+            currentPuzzleId = data.id;
+            currentPuzzleIndex++;
+            solutionMoves = data.solution;
+            console.log(solutionMoves);
+            currentMoveIndex = 0;
+
+            game = new Chess(data.fen);
+            board.position(data.fen);
+            document.getElementById('puzzleMessage').innerText = data.message;
+            document.getElementById('puzzleIndex').innerText = currentPuzzleIndex;
+            updateStatus();
+        });
+}
+</script>
 {% endblock %}

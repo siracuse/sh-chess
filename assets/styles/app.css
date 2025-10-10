@@ -1,6 +1,6 @@
 @import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
-@import "_utility.css";
-@import "_components.css";
+/* @import "_utility.css";
+@import "_components.css"; */
 
 body {
     padding: 15px;
