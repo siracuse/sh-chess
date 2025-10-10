@@ -14,15 +14,10 @@ final class WoodpeckerController extends AbstractController
     #[Route('/woodpecker', name: 'woodpecker')]
     public function index(EntityManagerInterface $em): Response
     {
-        
-        $firstPuzzle = $em->getRepository(Puzzle::class)->find(4);
-        // var_dump($firstPuzzle); die();
-        // $firstPuzzle = $puzzles[0] ?? null;
-        
+        $firstPuzzle = $em->getRepository(Puzzle::class)->find(7);
         return $this->render('woodpecker/index.html.twig', [
             'puzzle' => $firstPuzzle
         ]);
-
     }
 
     #[Route('/woodpecker/next', name: 'woodpecker_next', methods:['POST'])]

@@ -18,10 +18,10 @@ class Puzzle
     private ?string $fen = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $solution = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
     private ?string $message = null;
+
+    #[ORM\Column]
+    private array $solution = [];
 
     public function getId(): ?int
     {
@@ -40,17 +40,6 @@ class Puzzle
         return $this;
     }
 
-    public function getSolution(): ?string
-    {
-        return $this->solution;
-    }
-
-    public function setSolution(?string $solution): static
-    {
-        $this->solution = $solution;
-
-        return $this;
-    }
 
     public function getMessage(): ?string
     {
@@ -60,6 +49,18 @@ class Puzzle
     public function setMessage(?string $message): static
     {
         $this->message = $message;
+
+        return $this;
+    }
+
+    public function getSolution(): array
+    {
+        return $this->solution;
+    }
+
+    public function setSolution(array $solution): static
+    {
+        $this->solution = $solution;
 
         return $this;
     }

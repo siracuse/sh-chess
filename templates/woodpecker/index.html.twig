@@ -7,14 +7,15 @@
 <p>Puzzle <span id="puzzleIndex">1</span>
 
 <script>
+
 let currentPuzzleId = {{ puzzle.id }};
 let currentPuzzleIndex = 4;
 
 let game = new Chess('{{ puzzle.fen }}');
 let board = Chessboard2('myBoard', { draggable: true, position: '{{ puzzle.fen }}', onDrop: onDrop });
-let solutionMoves = {{ puzzle.solution|raw }}
+let solutionMoves = {{ puzzle.solution|json_encode|raw }};
 // let solutionMoves = ["e5c7","a5b4","c7d8"];
-console.log(solutionMoves);
+
 let currentMoveIndex = 0;
 
 updateStatus();
