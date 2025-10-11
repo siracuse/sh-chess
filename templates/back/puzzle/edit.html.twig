@@ -1,0 +1,20 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block body %}
+
+    <div class="card">
+        <div class="card-header">
+            <h1>Modification du puzzle : {{ puzzle.id }}</h1>
+        </div>
+        <div class="card-body">
+            {{ form_start(form) }}
+            {{ form_row(form.fen, {'attr': {'class': 'form-control'}}) }}
+            {{ form_row(form.solution, {'attr': {'class': 'form-control'}}) }}
+            {{ form_row(form.rating, {'attr': {'class': 'form-control'}}) }}
+            {{ form_row(form.theme, {'attr': {'class': 'form-control'}}) }}
+            {{ form_row(form.save, {'attr': {'class': 'btn btn-primary'}}) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+{% endblock %}

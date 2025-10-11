@@ -1,0 +1,43 @@
+{% extends 'baseAdmin.html.twig' %}
+
+
+{% block body %}
+    <h1> Les Thèmes</h1>
+
+    {% include 'back/flashMessage.html.twig' %}
+
+    <div class="card">
+        <div class="card-header">
+            <p><a class="btn btn-primary" href="{{ path('admin.theme.new') }}">Ajouter</a></p>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>Theme</th>
+                    <th class="action-menu">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for theme in themes %}
+                    <tr>
+                        <td>{{ theme.id }}</td>
+                        <td>{{ theme.name }}</td>
+                        <td class="action">
+                            <a href="{{ path('admin.theme.edit', {id:theme.id}) }}">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <a href="{{ path('admin.theme.delete', {id:theme.id}) }}">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+{% endblock %}

@@ -17,11 +17,15 @@ class Puzzle
     #[ORM\Column(type: Types::TEXT)]
     private ?string $fen = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $message = null;
+    #[ORM\Column(length: 255)]
+    private ?string $solution = null;
+
+    #[ORM\ManyToOne(inversedBy: 'puzzles')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Theme $theme = null;
 
     #[ORM\Column]
-    private array $solution = [];
+    private ?int $rating = null;
 
     public function getId(): ?int
     {
@@ -40,27 +44,38 @@ class Puzzle
         return $this;
     }
 
-
-    public function getMessage(): ?string
-    {
-        return $this->message;
-    }
-
-    public function setMessage(?string $message): static
-    {
-        $this->message = $message;
-
-        return $this;
-    }
-
-    public function getSolution(): array
+    public function getSolution(): string
     {
         return $this->solution;
     }
 
-    public function setSolution(array $solution): static
+    public function setSolution(string $solution): static
     {
         $this->solution = $solution;
+
+        return $this;
+    }
+
+    public function getTheme(): ?Theme
+    {
+        return $this->theme;
+    }
+
+    public function setTheme(?Theme $theme): static
+    {
+        $this->theme = $theme;
+
+        return $this;
+    }
+
+    public function getRating(): ?int
+    {
+        return $this->rating;
+    }
+
+    public function setRating(int $rating): static
+    {
+        $this->rating = $rating;
 
         return $this;
     }

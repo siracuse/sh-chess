@@ -41,7 +41,7 @@ final class WoodpeckerController extends AbstractController
             'id' => $nextPuzzle->getId(),
             'fen' => $nextPuzzle->getFen(),
             'solution' => $nextPuzzle->getSolution(),
-            'message' => $nextPuzzle->getMessage()
+            // 'message' => $nextPuzzle->getMessage()
         ]);
     }
 }

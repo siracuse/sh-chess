@@ -8,3 +8,13 @@ body {
     /* min-height: 100vh; */
     background-color: #fafafa;
 }
+
+
+nav ul {
+    display: flex;
+}
+
+nav ul li {
+    list-style-type: none;
+    margin-right: 10px;
+}

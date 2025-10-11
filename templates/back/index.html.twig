@@ -1,0 +1,55 @@
+{% extends 'baseAdmin.html.twig' %}
+
+
+{% block body %}
+    <h1>Espace administrateur</h1>
+
+    <div class="widget-grid">
+        <div class="card widget bg-1">
+            <div class="card-body">
+                <div class="widget-icon">
+                    <a href="{{ path('admin.puzzle.index') }}"><i class="fa-solid fa-circle-info"></i></a>
+                    <i class="fa-solid fa-puzzle-piece"></i>
+                </div>
+
+                <div class="widget-title">
+                    <span class="count">{{ nb_puzzle }}</span>
+                </div>
+                <small class="widget-desc">Puzzles</small>
+                <div class="progress progress-xs mt-3 mb-0 bg-light"></div>
+            </div>
+        </div>
+
+        <div class="card widget bg-4">
+            <div class="card-body">
+                <div class="widget-icon">
+                    <a href="{{ path('admin.theme.index') }}"><i class="fa-solid fa-circle-info"></i></a>
+                    <i class="fa-solid fa-book"></i>
+                </div>
+
+                <div class="widget-title">
+                    <span class="count">{{ nb_theme }}</span>
+                </div>
+                <small class="widget-desc">Thèmes</small>
+                <div class="progress progress-xs mt-3 mb-0 bg-light"></div>
+            </div>
+        </div>
+
+        <div class="card widget bg-3">
+            <div class="card-body">
+                <div class="widget-icon">
+                    <a href="#"><i class="fa-solid fa-circle-info"></i></a>
+                    <i class="fa fa-users"></i>
+                </div>
+
+                <div class="widget-title">
+                    <span class="count">#</span>
+                </div>
+                <small class="widget-desc">Utilisateurs</small>
+                <div class="progress progress-xs mt-3 mb-0 bg-light"></div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

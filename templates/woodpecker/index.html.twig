@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<h2 id="puzzleMessage">{{ puzzle.message }}</h2>
+{# <h2 id="puzzleMessage">{{ puzzle.message }}</h2> #}
 <div id="myBoard" style="width: 400px"></div>
 <p id="gameStatus"></p>
 <p>Puzzle <span id="puzzleIndex">1</span></p>
@@ -192,7 +192,7 @@ function onPuzzleComplete() {
     initialFen = data.fen;
     game = new Chess(initialFen);
     board.position(initialFen);
-    document.getElementById('puzzleMessage').innerText = data.message;
+    // document.getElementById('puzzleMessage').innerText = data.message;
     document.getElementById('puzzleIndex').innerText = currentPuzzleIndex;
     isLocked = false;
     updateStatus();

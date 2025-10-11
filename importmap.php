@@ -16,4 +16,8 @@ return [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
+    'appAdmin' => [
+        'path' => './assets/appAdmin.js',
+        'entrypoint' => true,
+    ],
 ];
