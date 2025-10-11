@@ -1,15 +1,20 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-{# <h2 id="puzzleMessage">{{ puzzle.message }}</h2> #}
-<div id="myBoard" style="width: 400px"></div>
-<p id="gameStatus"></p>
-<p>Puzzle <span id="puzzleIndex">1</span></p>
-<p>Erreurs : <span id="errorCount">0</span></p>
-<p>⏱️ Temps écoulé : <span id="timer">00:00</span></p>
+<h2>Thème tactique : {{ theme.name | capitalize }}</h2>
+<div class="d-flex g-20">
+    <div id="myBoard" style="width: 400px"></div>
+    <div>
+        <p id="gameStatus"></p>
+        <p>Puzzle n°<span id="puzzleIndex">1</span></p>
+        <p>Erreurs : <span id="errorCount">0</span></p>
+        <p>⏱️ Temps écoulé : <span id="timer">00:00</span></p>
+        <div id="feedbackZone" style="margin-top: 15px; font-size: 1.2em;"></div>
+    </div>
+</div>
 
 <!-- Zone de feedback -->
-<div id="feedbackZone" style="margin-top: 15px; font-size: 1.2em;"></div>
+
 
 <script>
 let currentPuzzleId = {{ puzzle.id }};
@@ -20,7 +25,9 @@ let errorCount = 0;
 let initialFen = '{{ puzzle.fen }}';
 let game = new Chess(initialFen);
 let board = Chessboard2('myBoard', { draggable: true, position: initialFen, onDrop: onDrop, showNotation: true });
-let solutionMoves = {{ puzzle.solution|json_encode|raw }};
+let solutionMoves = {{ solutionMove|json_encode|raw }};
+
+
 
 let currentMoveIndex = 0;
 let isLocked = false;
@@ -54,6 +61,10 @@ function onDrop(dropEvt) {
     if (!move) return 'snapback';
 
     const playedMove = dropEvt.source + dropEvt.target;
+
+    //console.log(solutionMoves[currentMoveIndex]);
+    //console.log(solutionMoves);
+    //console.log(playedMove);
 
     if (playedMove === solutionMoves[currentMoveIndex]) {
         currentMoveIndex++;

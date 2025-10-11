@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+<h1>WOODPECKER</h1>
+
+{% for theme in themes %}
+    <a href="{{path('woodpecker.theme', {id:theme.id})}}" class="btn btn-primary"> {{ theme.name }}</a>
+{% endfor %}
+
+{% endblock %}
+
+
+               
