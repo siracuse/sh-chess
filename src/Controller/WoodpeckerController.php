@@ -33,7 +33,6 @@ final class WoodpeckerController extends AbstractController
                 break;
             }
         }
-        // var_dump($nextPuzzle);die();
         if (!$nextPuzzle) {
             return $this->json(['done' => true]); // plus de puzzle
         }

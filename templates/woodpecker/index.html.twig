@@ -4,38 +4,66 @@
 <h2 id="puzzleMessage">{{ puzzle.message }}</h2>
 <div id="myBoard" style="width: 400px"></div>
 <p id="gameStatus"></p>
-<p>Puzzle <span id="puzzleIndex">1</span>
+<p>Puzzle <span id="puzzleIndex">1</span></p>
+<p>Erreurs : <span id="errorCount">0</span></p>
+<p>⏱️ Temps écoulé : <span id="timer">00:00</span></p>
+
+<!-- Zone de feedback -->
+<div id="feedbackZone" style="margin-top: 15px; font-size: 1.2em;"></div>
 
 <script>
-
 let currentPuzzleId = {{ puzzle.id }};
-let currentPuzzleIndex = 4;
+let currentPuzzleIndex = 1;
+let totalPuzzles = {{ totalPuzzles|default(0) }}; // <- si ton contrôleur peut envoyer le total
+let errorCount = 0;
 
-let game = new Chess('{{ puzzle.fen }}');
-let board = Chessboard2('myBoard', { draggable: true, position: '{{ puzzle.fen }}', onDrop: onDrop });
+let initialFen = '{{ puzzle.fen }}';
+let game = new Chess(initialFen);
+let board = Chessboard2('myBoard', { draggable: true, position: initialFen, onDrop: onDrop, showNotation: true });
 let solutionMoves = {{ puzzle.solution|json_encode|raw }};
-// let solutionMoves = ["e5c7","a5b4","c7d8"];
 
 let currentMoveIndex = 0;
+let isLocked = false;
+
+// --- TIMER ---
+let timerInterval;
+let totalSeconds = 0;
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        totalSeconds++;
+        const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+        const seconds = String(totalSeconds % 60).padStart(2, '0');
+        document.getElementById('timer').innerText = `${minutes}:${seconds}`;
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
+startTimer();
+// ------------
 
 updateStatus();
 
 function onDrop(dropEvt) {
+    if (isLocked) return 'snapback';
+
     const move = game.move({ from: dropEvt.source, to: dropEvt.target, promotion: 'q' });
     if (!move) return 'snapback';
 
     const playedMove = dropEvt.source + dropEvt.target;
-    console.log(playedMove,'playedMove');
-    console.log(solutionMoves, 'solutionMoves');
+
     if (playedMove === solutionMoves[currentMoveIndex]) {
-        
         currentMoveIndex++;
         board.position(game.fen());
         updateStatus();
 
         if (currentMoveIndex >= solutionMoves.length) {
-            console.log('au suivant');
-            onPuzzleComplete();
+            // puzzle fini
+            checkIfLastPuzzle();
+            isLocked = true;
             return;
         }
 
@@ -48,48 +76,126 @@ function onDrop(dropEvt) {
                 updateStatus();
             }, 400);
         }
+
     } else {
         game.undo();
-        alert('❌ Mauvais coup ! Réessaie.');
+        errorCount++;
+        document.getElementById('errorCount').innerText = errorCount;
+        showFeedback(false);
+        isLocked = true;
         return 'snapback';
     }
 }
 
+function showFeedback(success, isLast = false) {
+    const feedbackZone = document.getElementById('feedbackZone');
+    feedbackZone.innerHTML = '';
+
+    const icon = document.createElement('span');
+    icon.style.fontSize = '2em';
+    icon.style.marginRight = '10px';
+
+    const button = document.createElement('button');
+    button.style.padding = '6px 12px';
+    button.style.borderRadius = '8px';
+    button.style.border = 'none';
+    button.style.cursor = 'pointer';
+    button.style.fontWeight = 'bold';
+
+    if (success) {
+        icon.textContent = '✅';
+        icon.style.color = 'green';
+
+        if (isLast) {
+            // dernier puzzle → message final sans bouton
+            stopTimer();
+            const finalTime = document.getElementById('timer').innerText;
+            feedbackZone.innerHTML = `
+                <p> <b>Tous les puzzles terminés !</b><br>
+                 Temps total : ${finalTime}<br>
+                  Total d'erreurs : ${errorCount}</p>
+            `;
+            return;
+        }
+
+        button.textContent = 'Puzzle suivant →';
+        button.style.backgroundColor = '#4CAF50';
+        button.style.color = 'white';
+        button.onclick = () => {
+            feedbackZone.innerHTML = '';
+            onPuzzleComplete();
+        };
+    } else {
+        icon.textContent = '❌';
+        icon.style.color = 'red';
+        button.textContent = '↻ Réessayer';
+        button.style.backgroundColor = '#f44336';
+        button.style.color = 'white';
+        button.onclick = () => {
+            feedbackZone.innerHTML = '';
+            restartCurrentPuzzle();
+        };
+    }
+
+    feedbackZone.appendChild(icon);
+    feedbackZone.appendChild(button);
+}
+
+function restartCurrentPuzzle() {
+    game = new Chess(initialFen);
+    board.position(initialFen);
+    currentMoveIndex = 0;
+    isLocked = false;
+    updateStatus();
+}
+
 function updateStatus() {
-    document.getElementById('gameStatus').innerText = game.turn() === 'w' ? 'Trait aux Blancs' : 'Trait aux Noirs';
+    document.getElementById('gameStatus').innerText =
+        game.turn() === 'w' ? 'Trait aux Blancs' : 'Trait aux Noirs';
 }
 
-function onPuzzleComplete() {
-    setTimeout(() => {
-        alert('✅ Puzzle terminé ! Chargement du suivant...');
-        loadNextPuzzle();
-    }, 300);
-}
+function checkIfLastPuzzle() {
+    // Si ton backend ne renvoie pas totalPuzzles, on vérifie via le fetch
+    if (typeof totalPuzzles !== 'undefined' && totalPuzzles > 0) {
+        if (currentPuzzleIndex >= totalPuzzles) {
+            showFeedback(true, true); // dernier puzzle
+            return;
+        }
+    }
 
-function loadNextPuzzle() {
+    // Sinon, comportement normal (on demandera au backend s'il en reste)
     const formData = new FormData();
     formData.append('currentId', currentPuzzleId);
 
-    fetch('{{ path("woodpecker_next") }}', { method:'POST', body: formData })
+    fetch('{{ path("woodpecker_next") }}', { method: 'POST', body: formData })
         .then(resp => resp.json())
         .then(data => {
-            if(data.done){
-                alert('🎉 Tous les puzzles terminés !');
-                return;
+            if (data.done) {
+                showFeedback(true, true); // dernier puzzle détecté par le backend
+            } else {
+                // Pas le dernier, on propose le bouton suivant
+                // Mais on garde les infos pour le prochain chargement
+                window._nextPuzzleData = data;
+                showFeedback(true, false);
             }
-
-            currentPuzzleId = data.id;
-            currentPuzzleIndex++;
-            solutionMoves = data.solution;
-            console.log(solutionMoves);
-            currentMoveIndex = 0;
-
-            game = new Chess(data.fen);
-            board.position(data.fen);
-            document.getElementById('puzzleMessage').innerText = data.message;
-            document.getElementById('puzzleIndex').innerText = currentPuzzleIndex;
-            updateStatus();
         });
+}
+
+function onPuzzleComplete() {
+    const data = window._nextPuzzleData;
+    if (!data) return;
+
+    currentPuzzleId = data.id;
+    currentPuzzleIndex++;
+    solutionMoves = data.solution;
+    currentMoveIndex = 0;
+    initialFen = data.fen;
+    game = new Chess(initialFen);
+    board.position(initialFen);
+    document.getElementById('puzzleMessage').innerText = data.message;
+    document.getElementById('puzzleIndex').innerText = currentPuzzleIndex;
+    isLocked = false;
+    updateStatus();
 }
 </script>
 {% endblock %}
