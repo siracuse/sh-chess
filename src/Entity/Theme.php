@@ -24,9 +24,16 @@ class Theme
     #[ORM\OneToMany(targetEntity: Puzzle::class, mappedBy: 'theme')]
     private Collection $puzzles;
 
+    /**
+     * @var Collection<int, Statistic>
+     */
+    #[ORM\OneToMany(targetEntity: Statistic::class, mappedBy: 'theme')]
+    private Collection $statistics;
+
     public function __construct()
     {
         $this->puzzles = new ArrayCollection();
+        $this->statistics = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -70,6 +77,36 @@ class Theme
             // set the owning side to null (unless already changed)
             if ($puzzle->getTheme() === $this) {
                 $puzzle->setTheme(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Statistic>
+     */
+    public function getStatistics(): Collection
+    {
+        return $this->statistics;
+    }
+
+    public function addStatistic(Statistic $statistic): static
+    {
+        if (!$this->statistics->contains($statistic)) {
+            $this->statistics->add($statistic);
+            $statistic->setTheme($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStatistic(Statistic $statistic): static
+    {
+        if ($this->statistics->removeElement($statistic)) {
+            // set the owning side to null (unless already changed)
+            if ($statistic->getTheme() === $this) {
+                $statistic->setTheme(null);
             }
         }
 

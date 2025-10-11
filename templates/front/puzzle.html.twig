@@ -2,9 +2,9 @@
 
 {% block body %}
 <h2>Thème tactique : {{ theme.name | capitalize }}</h2>
-<div class="d-flex g-20">
+<div class="d-flex j-content-center g-20">
     <div id="myBoard" style="width: 400px"></div>
-    <div>
+    <div class="grid2">
         <p id="gameStatus"></p>
         <p>Puzzle n°<span id="puzzleIndex">1</span></p>
         <p>Erreurs : <span id="errorCount">0</span></p>
@@ -13,13 +13,10 @@
     </div>
 </div>
 
-<!-- Zone de feedback -->
-
-
 <script>
 let currentPuzzleId = {{ puzzle.id }};
 let currentPuzzleIndex = 1;
-let totalPuzzles = {{ totalPuzzles|default(0) }}; // <- si ton contrôleur peut envoyer le total
+let totalPuzzles = {{ totalPuzzles|default(0) }};
 let errorCount = 0;
 
 let initialFen = '{{ puzzle.fen }}';
@@ -32,7 +29,6 @@ let solutionMoves = {{ solutionMove|json_encode|raw }};
 let currentMoveIndex = 0;
 let isLocked = false;
 
-// --- TIMER ---
 let timerInterval;
 let totalSeconds = 0;
 
@@ -50,8 +46,6 @@ function stopTimer() {
 }
 
 startTimer();
-// ------------
-
 updateStatus();
 
 function onDrop(dropEvt) {
@@ -62,17 +56,12 @@ function onDrop(dropEvt) {
 
     const playedMove = dropEvt.source + dropEvt.target;
 
-    //console.log(solutionMoves[currentMoveIndex]);
-    //console.log(solutionMoves);
-    //console.log(playedMove);
-
     if (playedMove === solutionMoves[currentMoveIndex]) {
         currentMoveIndex++;
         board.position(game.fen());
         updateStatus();
 
         if (currentMoveIndex >= solutionMoves.length) {
-            // puzzle fini
             checkIfLastPuzzle();
             isLocked = true;
             return;
@@ -118,14 +107,20 @@ function showFeedback(success, isLast = false) {
         icon.style.color = 'green';
 
         if (isLast) {
-            // dernier puzzle → message final sans bouton
             stopTimer();
             const finalTime = document.getElementById('timer').innerText;
             feedbackZone.innerHTML = `
                 <p> <b>Tous les puzzles terminés !</b><br>
                  Temps total : ${finalTime}<br>
-                  Total d'erreurs : ${errorCount}</p>
+                  Total d'erreur(s) : ${errorCount}</p>
             `;
+
+            saveStats({ 
+                themeId: {{ theme.id }}, 
+                totalTime: totalSeconds,
+                errors: errorCount 
+            });
+
             return;
         }
 
@@ -152,6 +147,27 @@ function showFeedback(success, isLast = false) {
     feedbackZone.appendChild(button);
 }
 
+function saveStats(stats) {
+    const formData = new FormData();
+    formData.append('themeId', stats.themeId);
+    formData.append('totalTime', stats.totalTime);
+    formData.append('errors', stats.errors);
+
+    fetch('{{ path("woodpecker_save_stats") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(resp => resp.json())
+    .then(data => {
+        if (data.success) {
+            console.log("Stats enregistrées !");
+        } else {
+            console.warn("Erreur lors de l'enregistrement des stats");
+        }
+    })
+    .catch(err => console.error("Erreur réseau ou JSON:", err));
+}
+
 function restartCurrentPuzzle() {
     game = new Chess(initialFen);
     board.position(initialFen);
@@ -166,26 +182,23 @@ function updateStatus() {
 }
 
 function checkIfLastPuzzle() {
-    // Si ton backend ne renvoie pas totalPuzzles, on vérifie via le fetch
     if (typeof totalPuzzles !== 'undefined' && totalPuzzles > 0) {
         if (currentPuzzleIndex >= totalPuzzles) {
-            showFeedback(true, true); // dernier puzzle
+            showFeedback(true, true); 
             return;
         }
     }
 
-    // Sinon, comportement normal (on demandera au backend s'il en reste)
     const formData = new FormData();
     formData.append('currentId', currentPuzzleId);
+    formData.append('themeId', {{ theme.id }});
 
     fetch('{{ path("woodpecker_next") }}', { method: 'POST', body: formData })
         .then(resp => resp.json())
         .then(data => {
             if (data.done) {
-                showFeedback(true, true); // dernier puzzle détecté par le backend
+                showFeedback(true, true); 
             } else {
-                // Pas le dernier, on propose le bouton suivant
-                // Mais on garde les infos pour le prochain chargement
                 window._nextPuzzleData = data;
                 showFeedback(true, false);
             }
@@ -203,10 +216,10 @@ function onPuzzleComplete() {
     initialFen = data.fen;
     game = new Chess(initialFen);
     board.position(initialFen);
-    // document.getElementById('puzzleMessage').innerText = data.message;
     document.getElementById('puzzleIndex').innerText = currentPuzzleIndex;
     isLocked = false;
     updateStatus();
 }
+
 </script>
 {% endblock %}

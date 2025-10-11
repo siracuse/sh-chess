@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+
+<h1>Mes Statistiques</h1>
+
+
+<div class="t-align-center">
+    {% for stat in stats %}
+        <div> {{ stat.theme.name | capitalize }} Le {{ stat.datetime | date("m/d/Y") }} </div>
+        <div>  </div>
+        <div>⌛ Temps : {{ stat.time | date("H:i:s") }} </div>
+        <div> Nb Erreur : {{ stat.nbErreur }} </div>
+        <br><br>
+    {% endfor %}
+    
+</div>
+
+
+{% endblock %}

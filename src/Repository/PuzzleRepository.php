@@ -41,4 +41,14 @@ class PuzzleRepository extends ServiceEntityRepository
                ->getOneOrNullResult()
            ;
        }
+
+       public function findAllByThemeId($themeId)
+       {
+            return $this->createQueryBuilder('p')
+               ->andWhere('p.theme = :val')
+               ->setParameter('val', $themeId)
+               ->getQuery()
+               ->getResult()
+           ;
+       }
 }
