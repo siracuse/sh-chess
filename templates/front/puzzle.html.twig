@@ -2,7 +2,6 @@
 
 {% block body %}
 
-
 <div class="flex justify-center mt-20">
     <div class="widget widget-puzzle">
         <div class="t-align-end mb-20">
@@ -27,7 +26,6 @@
 </div>
 
 
-
 <script>
 let currentPuzzleId = {{ puzzle.id }};
 let currentPuzzleIndex = 1;
@@ -36,10 +34,15 @@ let errorCount = 0;
 
 let initialFen = '{{ puzzle.fen }}';
 let game = new Chess(initialFen);
-let board = Chessboard2('myBoard', { draggable: true, position: initialFen, onDrop: onDrop, showNotation: true });
+let initialTurn = game.turn(); // 'w' ou 'b'
+let board = Chessboard2('myBoard', { 
+    draggable: true, 
+    position: initialFen, 
+    onDrop: onDrop, 
+    showNotation: true,
+    orientation: initialTurn === 'w' ? 'white' : 'black' // ✅ Orientation fixe
+});
 let solutionMoves = {{ solutionMove|json_encode|raw }};
-
-
 
 let currentMoveIndex = 0;
 let isLocked = false;
@@ -229,6 +232,8 @@ function onPuzzleComplete() {
     currentMoveIndex = 0;
     initialFen = data.fen;
     game = new Chess(initialFen);
+    let initialTurn = game.turn();
+    board.orientation(initialTurn === 'w' ? 'white' : 'black');
     board.position(initialFen);
     document.getElementById('puzzleIndex').innerText = currentPuzzleIndex;
     isLocked = false;
