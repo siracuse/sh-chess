@@ -4,19 +4,49 @@
 {% block body %}
 
 
-<h1>Mes Statistiques</h1>
-
-
-<div class="t-align-center">
-    {% for stat in stats %}
-        <div> {{ stat.theme.name | capitalize }} Le {{ stat.datetime | date("m/d/Y") }} </div>
-        <div>  </div>
-        <div>⌛ Temps : {{ stat.time | date("H:i:s") }} </div>
-        <div> Nb Erreur : {{ stat.nbErreur }} </div>
-        <br><br>
-    {% endfor %}
+<div>
+    <h1 class="t-align-center mt-80">Mes Statistiques</h1>
+    <p class="t-align-center">Retrouvez ci-dessous l'historique de toutes vos sessions d'entrainement.</p>
+    <div class="t-align-center mb-80 mt-20">
+        <a href="{{ path('index') }}" class="btn btn-tertiary">Accueil</a>
+    </div>
     
+    <div class="flex justify-center">
+    {# <h2>Woodpecker</h2> #}
+
+        <table class="table widget">
+        <thead>
+            <tr>
+            <th>Thème</th>
+            <th>Date</th>
+            <th>Temps</th>
+            <th>Erreur(s)</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for stat in stats %}
+            
+            <tr>
+                <td>{{ stat.theme.name | capitalize }} </td>
+                <td>{{ stat.datetime | date("m/d/Y") }}</td>
+                <td>{{ stat.time | date("i:s") }}</td>
+                <td>{{ stat.nbErreur }}</td>
+            </tr>
+            
+        {% endfor %}
+
+        </tbody>
+        </table>
+
+
+
+        
+    </div>
 </div>
+
+
+
+
 
 
 {% endblock %}

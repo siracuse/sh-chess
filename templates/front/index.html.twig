@@ -20,7 +20,11 @@
         <div class="widget">
             <h2>Profil / Paramètres</h2>
             <p class="mb-40">Gérer votre compte utilisateur et vos préférences</p>
-            <a href="{{ path('app_login') }}" class="btn btn-tertiary">Préférences</a>
+            {% if app.user %}
+                <a href="{{ path('app_logout') }}" class="btn btn-tertiary">Déconnexion</a>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="btn btn-tertiary">Connexion</a>
+            {% endif %}
         </div>
     </div>
 </div>

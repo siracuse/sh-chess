@@ -16,6 +16,12 @@ h1, h2, h3 {
 a {
     text-decoration: none;
 }
+td, th {
+    padding-left: 30px;
+    padding-right: 30px;
+    text-align: center;
+}
+
 
 /* home page */
 .widget-home {
@@ -36,6 +42,9 @@ a {
 .widget-puzzle-info, #myBoard {
     width: 400px;
 }
+.btn-session-desktop {
+    display: none;
+}
 
 
 /* theme page */
@@ -44,12 +53,18 @@ a {
     border-radius: 8px;
     transition: all 0.3s;
     cursor: pointer;
-    width: 500px;
+    width: 350px;
     color: black;
 }
-
+.btn-theme:hover {
+    background-color: #2E75DB;
+    color: white;
+}
 .theme-icon {
     width: 50px;
+}
+.f-size {
+    font-size: 1.17em;
 }
 
 @media all and (min-width: 1050px) {
@@ -69,7 +84,29 @@ a {
         justify-content: center;
     }
 
-    .widget-puzzle-info, #myBoard {
+    #myBoard {
         width: 600px;
+    }
+
+    .widget-puzzle-info {
+        width: 400px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    #feedbackZone {
+        margin-top: auto;
+    }
+
+    .btn-small {
+        display: none;
+    }
+    .widget-puzzle {
+        display: flex;
+        height: initial;
+        gap: 20px;
+    }
+    .btn-session-desktop {
+        display: initial;
     }
 }

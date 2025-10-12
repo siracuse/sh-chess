@@ -4,21 +4,25 @@
 {% block body %}
 
 
-<div class="mt-40">
-    <h1 class="t-align-center mb-40">Choisir un thème</h1>
-
+<div class="mt-80">
+    <h1 class="t-align-center">Choisir un thème</h1>
+    <p class="t-align-center">Choisissez votre thème parmis la liste suivante.</p>
+    <div class="t-align-center mb-80 mt-20">
+        <a href="{{ path('index') }}" class="btn btn-tertiary">Accueil</a>
+    </div>
 
     <div class="t-align-center flex flex-col items-center gap-20">
     {% for theme in themes %}
-        
         <a href="{{path('woodpecker.theme', {id:theme.id})}}" 
-        class="btn-theme flex items-center widget gap-20"> 
-            <img class="theme-icon" src="{{ asset('images/themes/' ~ theme.name ~ '.svg') }}">
-            <div class="flex flex-col items-start ">
-                <h3>{{ theme.name|capitalize }}</h3>
-                <p>20 problèmes</p>
+        class="btn-theme widget flex items-center gap-20 justify-between"> 
+            <div class="flex gap-20">
+                <img class="theme-icon" src="{{ asset('images/themes/' ~ theme.name ~ '.svg') }}">
+                <div class="flex flex-col items-start ">
+                    <h3>{{ theme.name|capitalize }}</h3>
+                    <p>{{theme.puzzles | length}} problèmes</p>
+                </div>
             </div>
-            <p class="font-weight">< 1000 </p> 
+            <p class="font-weight f-size">< 1000 elo</p> 
         </a>
 
     {% endfor %}
