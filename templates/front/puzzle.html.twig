@@ -34,13 +34,13 @@ let errorCount = 0;
 
 let initialFen = '{{ puzzle.fen }}';
 let game = new Chess(initialFen);
-let initialTurn = game.turn(); // 'w' ou 'b'
+let initialTurn = game.turn(); 
 let board = Chessboard2('myBoard', { 
     draggable: true, 
     position: initialFen, 
     onDrop: onDrop, 
     showNotation: true,
-    orientation: initialTurn === 'w' ? 'white' : 'black' // ✅ Orientation fixe
+    orientation: initialTurn === 'w' ? 'white' : 'black'
 });
 let solutionMoves = {{ solutionMove|json_encode|raw }};
 
