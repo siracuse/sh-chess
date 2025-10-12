@@ -1,7 +1,31 @@
 {% extends 'base.html.twig' %}
 
-
 {% block body %}
-<h1>ACCUEIL </h1>
+
+<div class="t-align-center">
+    <h1 class="mt-80">Chess Tracker Training </h1>
+    <p class="mb-80">Suivez vos puzzles, vos progrès et vos statistiques en temps réel !</p>
+
+    <div class="widget-home">
+        <div class="widget">
+            <h2>Woodpecker</h2>
+            <p class="mb-40">Résolvez un ensemble de puzzle tactique pour améliorer vos compétences</p>
+            <a href="{{ path('woodpecker') }}" class="btn btn-primary">Commencer</a>
+        </div>
+        <div class="widget">
+            <h2>Vos statistiques</h2>
+            <p class="mb-40">Consultez votre progression par thème et vos temps moyens</p>
+            <a href="{{ path('stat') }}" class="btn btn-secondary">Voir mes stats</a>
+        </div>
+        <div class="widget">
+            <h2>Profil / Paramètres</h2>
+            <p class="mb-40">Gérer votre compte utilisateur et vos préférences</p>
+            <a href="{{ path('app_login') }}" class="btn btn-tertiary">Préférences</a>
+        </div>
+    </div>
+</div>
+
+
+
 
 {% endblock %}

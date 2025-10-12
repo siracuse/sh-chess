@@ -1,17 +1,48 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<h2>Thème tactique : {{ theme.name | capitalize }}</h2>
-<div class="d-flex j-content-center g-20">
-    <div id="myBoard" style="width: 400px"></div>
-    <div class="grid2">
-        <p id="gameStatus"></p>
-        <p>Puzzle n°<span id="puzzleIndex">1</span></p>
-        <p>Erreurs : <span id="errorCount">0</span></p>
-        <p>⏱️ Temps écoulé : <span id="timer">00:00</span></p>
-        <div id="feedbackZone" style="margin-top: 15px; font-size: 1.2em;"></div>
+
+
+<div class="flex justify-center mt-20">
+    <div class="widget widget-puzzle">
+        <div class="t-align-end mb-20">
+            <a href="{{ path('index') }}" class="btn-small btn-tertiary">Terminer la session</a>
+        </div>
+        <div id="myBoard"></div>
+        <div class="widget-puzzle-info mt-40">
+            {# <h1>Woodpecker</h1> #}
+            <div class="flex justify-between">
+                <h2 id="gameStatus"></h2>
+                <h2>Puzzle n°<span id="puzzleIndex">1</span></h2>
+            </div>
+            <div class="flex justify-between">
+                <div class="flex items-center"><h3 class="mr-10">Temps écoulé : </h3> <span id="timer"> 00:00</span></div>
+                <div class="flex items-center"><h3 class="mr-10">Erreur(s) :</h3> <span id="errorCount"> 0</span></div>
+            </div>
+            <div id="feedbackZone" class="flex justify-end mt-40"></div>
+        </div>
     </div>
 </div>
+
+
+
+
+
+
+{# <div class="d-flex j-content-center g-20">
+    
+    <div class="grid2">
+        
+        <p>Puzzle n°<span id="puzzleIndex">1</span></p>
+        <p>Erreurs : <span id="errorCount">0</span></p>
+        <p>Temps écoulé : <span id="timer">00:00</span></p>
+        
+    </div>
+</div> #}
+
+
+
+
 
 <script>
 let currentPuzzleId = {{ puzzle.id }};
@@ -96,15 +127,15 @@ function showFeedback(success, isLast = false) {
     icon.style.marginRight = '10px';
 
     const button = document.createElement('button');
-    button.style.padding = '6px 12px';
-    button.style.borderRadius = '8px';
-    button.style.border = 'none';
-    button.style.cursor = 'pointer';
-    button.style.fontWeight = 'bold';
+    //button.style.padding = '6px 12px';
+    //button.style.borderRadius = '8px';
+    //button.style.border = 'none';
+    //button.style.cursor = 'pointer';
+    //button.style.fontWeight = 'bold';
 
     if (success) {
-        icon.textContent = '✅';
-        icon.style.color = 'green';
+        //icon.textContent = '✅';
+        //icon.style.color = 'green';
 
         if (isLast) {
             stopTimer();
@@ -123,20 +154,19 @@ function showFeedback(success, isLast = false) {
 
             return;
         }
-
+        button.classList.add('btn', 'btn-secondary');
         button.textContent = 'Puzzle suivant →';
-        button.style.backgroundColor = '#4CAF50';
-        button.style.color = 'white';
+        //button.style.backgroundColor = '#4CAF50';
+        //button.style.color = 'white';
         button.onclick = () => {
             feedbackZone.innerHTML = '';
             onPuzzleComplete();
         };
     } else {
-        icon.textContent = '❌';
-        icon.style.color = 'red';
+        //icon.textContent = '❌';
+        //icon.style.color = 'red';
+        button.classList.add('btn', 'btn-danger');
         button.textContent = '↻ Réessayer';
-        button.style.backgroundColor = '#f44336';
-        button.style.color = 'white';
         button.onclick = () => {
             feedbackZone.innerHTML = '';
             restartCurrentPuzzle();
