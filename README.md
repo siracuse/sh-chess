@@ -14,3 +14,6 @@ Cette méthode était **peu pratique**, difficile à suivre et à mesurer dans l
 ## Stack technique
 - Symfony 7
 - 2 bibliothèques js : chess.js et chessboard.js
+
+## 🎬 Démonstration
+![Aperçu de l'application](docs/demo.gif)
